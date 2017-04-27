@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jasmine tests/inverted-index-test.js"
+    "test": "jasmine tests/inverted-index-test.js",
+    "coveralls": "cat ./coverage/**/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   },
   "homepage": "https://github.com/tolupatrick004/inverted-index-api#readme",
   "devDependencies": {
+    "coveralls": "^2.13.1",
     "dotenv": "^4.0.0",
     "eslint": "^3.15.0",
     "eslint-config-airbnb": "^14.1.0",
