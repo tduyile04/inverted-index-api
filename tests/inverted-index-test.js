@@ -1,8 +1,3 @@
-// const index = require('../src/inverted-index.js');
-
-
-// const input = '';
-
 const expect = require('expect');
 
 describe('Inverted index test', () => {

@@ -28,7 +28,6 @@
     "eslint-plugin-react": "^6.9.0",
     "gulp": "^3.9.1",
     "jasmine": "^2.6.0",
-    
     "supertest": "^3.0.0"
   },
   "dependencies": {
