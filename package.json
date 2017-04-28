@@ -1,0 +1,40 @@
+{
+  "name": "inverted-index-api",
+  "version": "1.0.0",
+  "description": "An api for getting creating and getting the index of a document",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jasmine tests/inverted-index-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tolupatrick004/inverted-index-api.git"
+  },
+  "author": "Duyile Tolulope Patrick",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tolupatrick004/inverted-index-api/issues"
+  },
+  "homepage": "https://github.com/tolupatrick004/inverted-index-api#readme",
+  "devDependencies": {
+    "coveralls": "^2.13.1",
+    "dotenv": "^4.0.0",
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.9.0",
+    "gulp": "^3.9.1",
+    "istanbul": "^0.4.5",
+    "jasmine": "^2.6.0",
+    "jscoverage": "^0.6.0",
+    "nodeunit": "^0.11.0",
+    "supertest": "^3.0.0"
+  },
+  "dependencies": {
+    "expect": "^1.20.2"
+  }
+}
