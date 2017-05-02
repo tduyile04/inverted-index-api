@@ -8,7 +8,8 @@ const empty = require('../fixtures/empty.json');
 const emptyContent = require('../fixtures/empty-content.json');
 const invalidFormat = require('../fixtures/invalid-format.json');
 const invalidContent = require('../fixtures/invalid-content.json');
-const file = require('../fixtures/book1.json');
+const file = require('../fixtures/test.json');
+const bookFile = require('../fixtures/test.json');
 
 describe('Inverted index test', () => {
   describe('Reading books data', () => {
@@ -38,10 +39,37 @@ describe('Inverted index test', () => {
   });
   describe('Populate index', () => {
     it('should return the appropriate value if an index was created', () => {
-      expect(index.createIndex('book1.json', file)).toBe('');
+      expect(index.createIndex('test.json', file)).toBe(
+        { 'test.json': { a: [0, 1], b: [0, 1], c: [0], d: [0, 1], e: [0], f: [0, 1], g: [1], x: [0, 1], y: [1], z: [1] }
+        });
     });
     it('should return false if no index was created', () => {
-      expect(index.createIndex('invalid.json', invalid)).toBe('false');
+      expect(index.createIndex('invalid.json', invalid)).toBe(false);
+    });
+  });
+
+  const createdIndex = index.createIndex('test.json', file);
+  const multipleIndex = index.createIndex('book1.json', bookFile);
+  describe('Search index', () => {
+    it('should return false if the search term cannot be found in the book', () => {
+      expect(index.searchIndex(createdIndex, 'test.json', 'm')).toBe({ 'test.json': { m: false } });
+    });
+    it('should ensure that the passed in index is in the correct form', () => {
+      expect(index.searchIndex({ book: { page: ['random', 'anonymous'] } }, 'test.json', 'm')).toBe('invalid index');
+    });
+    it('should return the correct result if the search term is a single word', () => {
+      expect(index.searchIndex(createdIndex, 'test.json', 'a')).toBe({ 'test.json': { a: [0, 1] } });
+    });
+    it('should return the correct result if the search term is a list of words', () => {
+      expect(index.searchIndex(createdIndex, 'test.json', 'm', 'a')).toBe({ 'test.json': { m: false, a: [0, 1] } });
+    });
+    it('should be able to handle a varying number of search arguments and return correct results', () => {
+      expect(index.searchIndex(createdIndex, 'test.json', 'm', ['a', 'b'], 'c')).toBe({ 'test.json': { m: false, a: [0, 1], b: [0, 1], c: [0] } });
+    });
+    it('should return a search of all the books that have been indexed if no fileName is specified', () => {
+      expect(index.searchIndex(multipleIndex, 'a', 'the')).toBe(
+        { 'test.json': { a: [0, 1], the: false } }, { 'book1.json': { a: false, the: [0, 1] }
+        });
     });
   });
 });
