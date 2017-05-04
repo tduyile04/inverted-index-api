@@ -12,4 +12,5 @@ before_script:
 
     - npm install
 
-after_script: cat coverage/*lcov.info | ./node_modules/.bin/coveralls
+after_script: 
+    - npm run coveralls
