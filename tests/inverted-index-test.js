@@ -1,15 +1,16 @@
-'use strict';
-
-const expect = require('expect');
-const InvertedIndex = require('../src/inverted-index.js');
-const InvertedIndexValidation = require('../utils/inverted-index-validation.js');
-const invalid = require('../fixtures/invalid.json');
-const empty = require('../fixtures/empty.json');
-const emptyContent = require('../fixtures/empty-content.json');
-const invalidFormat = require('../fixtures/invalid-format.json');
-const invalidContent = require('../fixtures/invalid-content.json');
-const file = require('../fixtures/test.json');
-const bookFile = require('../fixtures/test.json');
+import expect from 'expect';
+import should from 'should';
+import supertest from 'supertest';
+import InvertedIndex from '../src/inverted-index';
+import app from '../src/routes/app';
+import InvertedIndexValidation from '../src/utils/inverted-index-validation';
+import invalid from '../fixtures/invalid.json';
+import empty from '../fixtures/empty.json';
+import emptyContent from '../fixtures/empty-content.json';
+import invalidFormat from '../fixtures/invalid-format.json';
+import invalidContent from '../fixtures/invalid-content.json';
+import file from '../fixtures/test.json';
+import bookFile from '../fixtures/book1.json';
 
 describe('Inverted index test', () => {
   describe('Reading books data', () => {
@@ -70,6 +71,56 @@ describe('Inverted index test', () => {
       expect(index.searchIndex(multipleIndex, 'a', 'the')).toBe(
         { 'test.json': { a: [0, 1], the: false } }, { 'book1.json': { a: false, the: [0, 1] }
         });
+    });
+  });
+});
+
+describe('Inverted index endpoints test', () => {
+  describe('Create Index endpoint', () => {
+    it('should return valid index data for /create/index...', (done) => {
+      supertest(app)
+      .post('/create/index')
+      .send('test.json')
+      .expect(200)
+      .expect(
+        "{ 'test.json': { a: [0, 1], b: [0, 1], c: [0], d: [0, 1], e: [0], f: [0, 1], g: [1], x: [0, 1], y: [1], z: [1] }",
+        done);
+      // .end((err, res) => {
+      //   res.status.should.equal(200);
+      //   res.body.status.should.equal('done');
+      //   done();
+      // });
+    });
+    it('should return invalid for ...', (done) => {
+      supertest(app)
+      .post('/create/index')
+      .expect(404)
+      .expect(false, done);
+      // .end((err, res) => {
+      //   // res.status.should.equal(404);
+      //   res.body.status.should.equal('invalid');
+      //   done();
+      // });
+    });
+  });
+  describe('Search Index endpoint', () => {
+    it('should return valid index data for /search/index...', (done) => {
+      supertest(app)
+      .post('/search/index')
+      .expect(200)
+      .end((err, res) => {
+        res.status.should.equal(200);
+        done();
+      });
+    });
+    it('should return invalid for ...', (done) => {
+      supertest(app)
+      .post('/search/index')
+      .expect(404)
+      .end((err, res) => {
+        res.status.should.equal(404);
+        done();
+      });
     });
   });
 });
