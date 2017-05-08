@@ -1,0 +1,1 @@
+[![Coverage Status](https://coveralls.io/repos/github/tolupatrick004/inverted-index-api/badge.svg?branch=master)](https://coveralls.io/github/tolupatrick004/inverted-index-api?branch=master)

@@ -159,22 +159,25 @@ var InvertedIndexValidation = function () {
     key: 'hasError',
     value: function hasError(docs) {
       var errorMessage = '';
-      if (InvertedIndexValidation.checkValidJSON(docs)) {
+      if (!InvertedIndexValidation.isValidJSON(docs)) {
         errorMessage = InvertedIndexValidation.checkValidJSON(docs);
+        console.log('why are you not working');
+        console.log(InvertedIndexValidation.checkValidJSON(docs));
+        return errorMessage;
       }
-      if (InvertedIndexValidation.checkEmptyError(docs)) {
+      if (InvertedIndexValidation.isEmpty(docs)) {
         errorMessage = InvertedIndexValidation.checkEmptyError(docs);
         return errorMessage;
       }
-      if (InvertedIndexValidation.checkEmptyContent(docs)) {
+      if (InvertedIndexValidation.isContentEmpty(docs)) {
         errorMessage = InvertedIndexValidation.checkEmptyContent(docs);
         return errorMessage;
       }
-      if (InvertedIndexValidation.checkFormatValidity(docs)) {
+      if (InvertedIndexValidation.isInvalidFormat(docs)) {
         errorMessage = InvertedIndexValidation.checkFormatValidity(docs);
         return errorMessage;
       }
-      if (InvertedIndexValidation.checkContentValidity(docs)) {
+      if (InvertedIndexValidation.isInvalidContent(docs)) {
         errorMessage = InvertedIndexValidation.checkContentValidity(docs);
         return errorMessage;
       }

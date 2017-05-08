@@ -25,6 +25,9 @@ describe('Inverted index test', () => {
     it('should return true if the file content is empty', () => {
       expect(InvertedIndexValidation.isEmpty(empty)).toBe(true);
     });
+    it('should return "Invalid JSON" if the file is not JSON', () => {
+      expect(InvertedIndexValidation.checkValidJSON(invalid)).toBe('Invalid JSON');
+    });
     it('should return "Empty documents are invalid" if the file lacks one', () => {
       expect(InvertedIndexValidation.checkEmptyError(empty)).toBe('Empty documents are invalid');
     });
@@ -41,11 +44,17 @@ describe('Inverted index test', () => {
       const result = ['a b c d e f x', 'a g b d,f x y z x'];
       expect(InvertedIndexUtils.concatTitleAndText(file)).toEqual(result);
     });
+    it('should return the correct error message if the file is malformed', () => {
+      const errorMessage = 'Invalid JSON';
+      console.log(InvertedIndexValidation.isValidJSON(invalid));
+      console.log(InvertedIndexValidation.checkValidJSON(invalid));
+      console.log(InvertedIndexValidation.hasError(invalid));
+      expect(InvertedIndexValidation.hasError(invalid)).toEqual(errorMessage);
+    });
   });
 
   describe('Populate index', () => {
     it('should return the appropriate value if an index was created', () => {
-      console.log(index.createIndex('book1.json', bookFile));
       expect(index.createIndex('book1.json', bookFile)).toEqual(
         { 'book1.json':
         { harry: [0, 1],

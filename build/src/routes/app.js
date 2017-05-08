@@ -37,6 +37,29 @@ var port = void 0;
 
 var app = (0, _express2.default)();
 
+function hasError(req, res, next) {
+  var files = req.files;
+  var fileLength = files.length;
+  if (fileLength === 1) {
+    var file = files[0];
+    if (_invertedIndexValidation2.default.hasError(file)) {
+      var errorMessage = _invertedIndexValidation2.default.hasError(file);
+      res.json({ error: errorMessage });
+      res.end();
+    }
+  } else if (fileLength > 1) {
+    files.forEach(function (file) {
+      if (_invertedIndexValidation2.default.hasError(file)) {
+        var _errorMessage = _invertedIndexValidation2.default.hasError(file);
+        res.json({ error: _errorMessage });
+        res.end();
+      }
+    });
+  } else {
+    next();
+  }
+}
+
 // switch (process.env.NODE_ENV) {
 //   case 'test':
 //     app.set(port, process.env.PORT_TEST);
@@ -108,17 +131,13 @@ app.get('/api/search', function (req, res) {
   res.json(searchResults);
 });
 
-app.post('/api/create', upload.array('books', 12), function (req, res) {
+app.post('/api/create', upload.array('books', 12), hasError, function (req, res) {
   var invertedIndex = new _invertedIndex2.default();
   var files = req.files;
   var numFile = files.length;
   if (numFile === 1) {
     var newFile = JSON.parse(files[0].buffer);
     var fileTitle = files[0].originalname;
-    if (_invertedIndexValidation2.default.hasError(newFile)) {
-      var errorMessage = _invertedIndexValidation2.default.hasError(newFile);
-      res.json({ error: errorMessage });
-    }
     var singleDatabase = invertedIndex.createIndex(fileTitle, newFile);
     var addDatabase = JSON.stringify(singleDatabase);
     _fs2.default.writeFileSync('./src/routes/database.json', addDatabase);
@@ -128,10 +147,6 @@ app.post('/api/create', upload.array('books', 12), function (req, res) {
     files.forEach(function (file) {
       var parsedFile = JSON.parse(file.buffer);
       _fileTitle = file.originalname;
-      if (_invertedIndexValidation2.default.hasError(parsedFile)) {
-        var _errorMessage = _invertedIndexValidation2.default.hasError(parsedFile);
-        res.json({ error: _errorMessage });
-      }
       var multipleDatabase = invertedIndex.createIndex(_fileTitle, parsedFile);
       var addDatabase = JSON.stringify(multipleDatabase);
       _fs2.default.writeFileSync('./src/routes/database.json', addDatabase);
