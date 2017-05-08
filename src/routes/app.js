@@ -15,6 +15,29 @@ let port;
 
 const app = express();
 
+function hasError(req, res, next) {
+  const files = req.files;
+  const fileLength = files.length;
+  if (fileLength === 1) {
+    const file = files[0];
+    if (InvertedIndexValidation.hasError(file)) {
+      const errorMessage = InvertedIndexValidation.hasError(file);
+      res.json({ error: errorMessage });
+      res.end();
+    }
+  } else if (fileLength > 1) {
+    files.forEach((file) => {
+      if (InvertedIndexValidation.hasError(file)) {
+        const errorMessage = InvertedIndexValidation.hasError(file);
+        res.json({ error: errorMessage });
+        res.end();
+      }
+    });
+  } else {
+    next();
+  }
+}
+
 // switch (process.env.NODE_ENV) {
 //   case 'test':
 //     app.set(port, process.env.PORT_TEST);
@@ -96,18 +119,13 @@ app.get('/api/search', (req, res) => {
   res.json(searchResults);
 });
 
-app.post('/api/create', upload.array('books', 12), (req, res) => {
+app.post('/api/create', upload.array('books', 12), hasError, (req, res) => {
   const invertedIndex = new InvertedIndex();
   const files = req.files;
   const numFile = files.length;
   if (numFile === 1) {
     const newFile = JSON.parse(files[0].buffer);
     const fileTitle = files[0].originalname;
-    if (InvertedIndexValidation.hasError(newFile)) {
-      const errorMessage = InvertedIndexValidation.hasError(newFile);
-      res.json({ error: errorMessage });
-      res.end();
-    }
     const singleDatabase = invertedIndex.createIndex(fileTitle, newFile);
     const addDatabase = JSON.stringify(singleDatabase);
     fs.writeFileSync('./src/routes/database.json', addDatabase);
@@ -117,11 +135,6 @@ app.post('/api/create', upload.array('books', 12), (req, res) => {
     files.forEach((file) => {
       let parsedFile = JSON.parse(file.buffer);
       fileTitle = file.originalname;
-      if (InvertedIndexValidation.hasError(parsedFile)) {
-        const errorMessage = InvertedIndexValidation.hasError(parsedFile);
-        res.json({ error: errorMessage });
-        res.end();
-      }
       let multipleDatabase = invertedIndex.createIndex(fileTitle, parsedFile);
       const addDatabase = JSON.stringify(multipleDatabase);
       fs.writeFileSync('./src/routes/database.json', addDatabase);
