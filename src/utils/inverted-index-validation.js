@@ -77,7 +77,13 @@ export default class InvertedIndexValidation {
     }
     return false;
   }
-
+  static checkValidJSON(docs) {
+    let errorMessage = '';
+    if (!InvertedIndexValidation.isValidJSON(docs)) {
+      errorMessage = 'Invalid JSON';
+    }
+    return errorMessage;
+  }
   static checkEmptyError(docs) {
     let errorMessage = '';
 
@@ -115,6 +121,30 @@ export default class InvertedIndexValidation {
       }
     });
     return errorMessage;
+  }
+
+  static hasError(docs) {
+    let errorMessage = '';
+    if (InvertedIndexValidation.checkValidJSON(docs)) {
+      errorMessage = InvertedIndexValidation.checkValidJSON(docs);
+    }
+    if (InvertedIndexValidation.checkEmptyError(docs)) {
+      errorMessage = InvertedIndexValidation.checkEmptyError(docs);
+      return errorMessage;
+    }
+    if (InvertedIndexValidation.checkEmptyContent(docs)) {
+      errorMessage = InvertedIndexValidation.checkEmptyContent(docs);
+      return errorMessage;
+    }
+    if (InvertedIndexValidation.checkFormatValidity(docs)) {
+      errorMessage = InvertedIndexValidation.checkFormatValidity(docs);
+      return errorMessage;
+    }
+    if (InvertedIndexValidation.checkContentValidity(docs)) {
+      errorMessage = InvertedIndexValidation.checkContentValidity(docs);
+      return errorMessage;
+    }
+    return false;
   }
 
 }

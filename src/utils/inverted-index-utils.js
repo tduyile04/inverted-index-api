@@ -28,7 +28,7 @@ export default class InvertedIndexUtils {
         result.push(word);
       }
     });
-    result = this.removeDuplicates(result);
+    result = InvertedIndexUtils.removeDuplicates(result);
     return result;
   }
 
@@ -99,8 +99,6 @@ export default class InvertedIndexUtils {
     }
     return searchResult;
   }
-
-
 
   static contains(letter, result) {
     const resultKeys = Object.keys(result);
