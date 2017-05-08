@@ -1,5 +1,9 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -9,7 +13,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * 
  * @class InvertedIndexValidation
  */
-module.exports = function () {
+var InvertedIndexValidation = function () {
   function InvertedIndexValidation() {
     _classCallCheck(this, InvertedIndexValidation);
   }
@@ -100,6 +104,15 @@ module.exports = function () {
       return false;
     }
   }, {
+    key: 'checkValidJSON',
+    value: function checkValidJSON(docs) {
+      var errorMessage = '';
+      if (!InvertedIndexValidation.isValidJSON(docs)) {
+        errorMessage = 'Invalid JSON';
+      }
+      return errorMessage;
+    }
+  }, {
     key: 'checkEmptyError',
     value: function checkEmptyError(docs) {
       var errorMessage = '';
@@ -142,7 +155,34 @@ module.exports = function () {
       });
       return errorMessage;
     }
+  }, {
+    key: 'hasError',
+    value: function hasError(docs) {
+      var errorMessage = '';
+      if (InvertedIndexValidation.checkValidJSON(docs)) {
+        errorMessage = InvertedIndexValidation.checkValidJSON(docs);
+      }
+      if (InvertedIndexValidation.checkEmptyError(docs)) {
+        errorMessage = InvertedIndexValidation.checkEmptyError(docs);
+        return errorMessage;
+      }
+      if (InvertedIndexValidation.checkEmptyContent(docs)) {
+        errorMessage = InvertedIndexValidation.checkEmptyContent(docs);
+        return errorMessage;
+      }
+      if (InvertedIndexValidation.checkFormatValidity(docs)) {
+        errorMessage = InvertedIndexValidation.checkFormatValidity(docs);
+        return errorMessage;
+      }
+      if (InvertedIndexValidation.checkContentValidity(docs)) {
+        errorMessage = InvertedIndexValidation.checkContentValidity(docs);
+        return errorMessage;
+      }
+      return false;
+    }
   }]);
 
   return InvertedIndexValidation;
 }();
+
+exports.default = InvertedIndexValidation;
