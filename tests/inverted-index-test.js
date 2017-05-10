@@ -95,59 +95,101 @@ describe('Inverted index test', () => {
     it('should be able to handle a varying number of search arguments and return correct results', () => {
       expect(index3.searchIndex(data, 'book1.json', 'harry porter', 'the', 'a')).toEqual({ 'book1.json': { harry: [0, 1], porter: [0, 1], the: [0, 1], a: 'not found' } });
     });
-    // it('should return a search of all the books that have been indexed if no fileName is specified', () => {
-    //   expect(index.searchIndex(completeIndex, '', 'a', 'the')).toEqual(
-    //     { 'book1.json': { a: 'not found', the: [0, 1] } }, { 'test.json': { a: [0, 1], the: 'not found' } }
-    //     );
-    // });
   });
 });
 
-// describe('Inverted index endpoints test', () => {
-//   describe('Create Index endpoint', () => {
-//     it('should return valid index data for /create/index...', (done) => {
-//       supertest(app)
-//       .post('/create/index')
-//       .send('book1.json')
-//       .expect(200)
-//       .expect(
-//         { 'book1.json':
-//         { harry: [0, 1],
-//           porter: [0, 1],
-//           the: [0, 1],
-//           boy: [0],
-//           who: [0],
-//           was: [0],
-//           destined: [0],
-//           to: [0],
-//           defeat: [0],
-//           lord: [0],
-//           voldermort: [0],
-//           sorceres: [1],
-//           stone: [1],
-//           first: [1],
-//           book: [1],
-//           of: [1],
-//           series: [1] } },
-//         done);
-//     });
-//     it('should return valid index data for /create/index...', (done) => {
-//       supertest(app)
-//       .post('/create/index')
-//       .send('book1.json')
-//       .expect(200, done);
-//     });
-//   });
-
-//   describe('Search Index endpoint', () => {
-//     it('should return valid index data for /search/index...', (done) => {
-//       supertest(app)
-//       .post('/search/index')
-//       .expect(200)
-//       .end((err, res) => {
-//         res.status.should.equal(200);
-//         done();
-//       });
-//     });
-//   });
-// });
+describe('Inverted index endpoints test', () => {
+  describe('Create Index endpoint', () => {
+    it('should return valid index data for a single upload file', (done) => {
+      supertest(app)
+      .post('/create/index')
+      .attach('books', './fixtures/book1.json')
+      .expect(
+        { 'book1.json':
+        { harry: [0, 1],
+          porter: [0, 1],
+          the: [0, 1],
+          boy: [0],
+          who: [0],
+          was: [0],
+          destined: [0],
+          to: [0],
+          defeat: [0],
+          lord: [0],
+          voldermort: [0],
+          sorceres: [1],
+          stone: [1],
+          first: [1],
+          book: [1],
+          of: [1],
+          series: [1] } },
+        done);
+    });
+    it('should return valid index data for multiple upload file', (done) => {
+      supertest(app)
+      .post('/create/index')
+      .attach('books', './fixtures/book1.json')
+      .attach('books', './fixtures/test.json')
+      .expect(
+        { 'book1.json':
+        { harry: [0, 1],
+          porter: [0, 1],
+          the: [0, 1],
+          boy: [0],
+          who: [0],
+          was: [0],
+          destined: [0],
+          to: [0],
+          defeat: [0],
+          lord: [0],
+          voldermort: [0],
+          sorceres: [1],
+          stone: [1],
+          first: [1],
+          book: [1],
+          of: [1],
+          series: [1]
+        },
+          'test.json':
+          { a: [0, 1],
+            b: [0, 1],
+            c: [0],
+            d: [0],
+            e: [0],
+            f: [0],
+            x: [0, 1],
+            g: [1],
+            df: [1],
+            y: [1],
+            z: [1]
+          }
+        }, done);
+    });
+    it('should return an index that is valid json', (done) => {
+      supertest(app)
+      .post('/api/createIndex')
+      .expect('Content-Type', 'application/json', done);
+    });
+  });
+  describe('Search Index endpoint tests', () => {
+    it('should return a search result that is valid json', (done) => {
+      supertest(app)
+      .post('/api/searchIndex')
+      .expect('Content-Type', 'application/json', done);
+    });
+    it('should return "not found" for a single search term if not present in document', () => {
+      supertest(app)
+      .post('/search/index')
+      .field('search', 'm')
+      .field('fileName', 'test.json')
+      .expect({ 'test.json': { m: 'not found' } });
+    });
+    it('should return valid index data for multiple search terms', () => {
+      supertest(app)
+      .post('/search/index')
+      .field('search', 'a the')
+      .field('fileName', '')
+      .expect({ 'book1.json': { a: 'not found', the: [0, 1] } }, { 'test.json': { a: [0, 1], the: 'not found' } });
+    });
+  });
+});

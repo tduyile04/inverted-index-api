@@ -8,7 +8,7 @@ import InvertedIndexValidation from '../utils/inverted-index-validation';
 const upload = multer();
 const app = express();
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log('Listening on port 3000');
 });
 
@@ -94,6 +94,9 @@ app.post('/api/search', (req, res) => {
   const db = fs.readFileSync('./src/routes/database.json');
   const index = JSON.parse(db);
   let searchResult = '';
+  if (index === null) {
+    res.json({ error: 'No index has been created' });
+  }
   if (typeof fileName === 'undefined') {
     searchResult = invertedIndex.searchIndex(index, '', searchTerms);
   } else {
@@ -101,3 +104,5 @@ app.post('/api/search', (req, res) => {
   }
   res.json(searchResult);
 });
+
+export default server;

@@ -6,6 +6,7 @@ const injectModules = require('gulp-inject-modules');
 const istanbul = require('gulp-istanbul');
 const coveralls = require('gulp-coveralls');
 const nodemon = require('gulp-nodemon');
+const exit = require('gulp-exit');
 
 gulp.task('default', ['watch-src-converters', 'watch-test-converters']);
 
@@ -49,10 +50,10 @@ gulp.task('clean-src', () => {
 });
 
 gulp.task('run-tests', () => {
-  gulp.src('./tests/inverted-index-test.js')
-      .pipe(babel())
+  gulp.src('./build/tests/inverted-index-test.js')
       .pipe(injectModules())
-      .pipe(jasmine());
+      .pipe(jasmine())
+      .pipe(exit());
 });
 
 gulp.task('serve', () => {
