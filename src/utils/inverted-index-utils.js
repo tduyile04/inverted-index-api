@@ -1,10 +1,16 @@
 /**
- * 
- * 
+ * Helper class for create and seach index functionalities
  * @class InvertedIndexUtils
  */
 export default class InvertedIndexUtils {
 
+  /**
+   * Removes repetitive words from an array
+   * @static
+   * @param {any} arr - Document terms that might have repetitive words
+   * @returns {Array} - A set(unique tokens) of the array input
+   * @memberOf InvertedIndexUtils
+   */
   static removeDuplicates(arr) {
     let check = {};
     let result = [];
@@ -17,6 +23,29 @@ export default class InvertedIndexUtils {
     return result;
   }
 
+  /**
+   * Sanitizes the search value of all user typo, unknowingly or maliciously
+   * @static
+   * @param {any} search - The value to be searched
+   * @returns {string} - A sanitized search query
+   * @memberOf InvertedIndexUtils
+   */
+  static sanitizeSearchQuery(search) {
+    search = search.toLowerCase()
+    .replace(/-/g, ' ')
+    .replace(/[^A-z\s]/g, ' ')
+    .split(' ');
+    return search;
+  }
+  /**
+   * Creates unique words without special characters and converts all
+   * to lowercase for consistency
+   * @static
+   * @param {any} input - A string of words
+   * @returns {Array} - A set of unique words without special characters
+   *                    and inconsistent character casing
+   * @memberOf InvertedIndexUtils
+   */
   static sanitizeInput(input) {
     input = input.toLowerCase()
     .replace(/-/g, ' ')
@@ -32,6 +61,13 @@ export default class InvertedIndexUtils {
     return result;
   }
 
+  /**
+   * Joins the title and text property of each documents
+   * @static
+   * @param {any} books - An array of books classified into distinct titles and texts
+   * @returns {Array} - An array of documents grouped by joining its titles and texts
+   * @memberOf InvertedIndexUtils
+   */
   static concatTitleAndText(books) {
     const space = ' ';
     const addContents = books.map((book) => {
@@ -41,6 +77,13 @@ export default class InvertedIndexUtils {
     return addContents;
   }
 
+  /**
+   * Splits the grouped documents into unique tokens
+   * @static
+   * @param {any} bookArray - An array of documents grouped by joining its titles and texts
+   * @returns {Array} - An array of grouped unique tokens
+   * @memberOf InvertedIndexUtils
+   */
   static produceUniqueTokens(bookArray) {
     const result = [];
     bookArray.forEach((book) => {
@@ -50,6 +93,14 @@ export default class InvertedIndexUtils {
     return result;
   }
 
+  /**
+   * 
+   * Converts the grouped documents of unique tokens into an index
+   * @static
+   * @param {any} terms - An array of grouped unique tokens
+   * @returns {Object} - A map of the unique tokens to its corresponding index
+   * @memberOf InvertedIndexUtils
+   */
   static convertTokensToIndexes(terms) {
     let result = {};
     let check = {};
@@ -67,6 +118,15 @@ export default class InvertedIndexUtils {
     return result;
   }
 
+  /**
+   * Checks if the item is in the specified book/file
+   * @static
+   * @param {any} index - A map of the unique tokens to its corresponding index
+   * @param {any} fileName - The name of the file to be searched
+   * @param {any} item - The required value to be searched
+   * @returns {Number|string} - correct index if found or 'not found' if otherwise
+   * @memberOf InvertedIndexUtils
+   */
   static findSearchItem(index, fileName, item) {
     let result = {};
     if (InvertedIndexUtils.contains(item, index[fileName])) {
@@ -77,11 +137,21 @@ export default class InvertedIndexUtils {
     return result;
   }
 
+  /**
+   * Searches a book and returns a map of the index showing presence/absence
+   * @static
+   * @param {any} index - A map of the unique tokens to its corresponding index
+   * @param {any} fileName - The name of the file to be searched
+   * @param {any} terms - The required value(s) to be searched
+   * @returns {Object} - A map of the searched book to its index if found and
+   *                     'not found' if not present in the file
+   * @memberOf InvertedIndexUtils
+   */
   static searchBook(index, fileName, ...terms) {
     let searchResult = {};
     if (terms.length === 1) {
       let newElement = terms[0];
-      newElement = newElement.split(' ');
+      newElement = InvertedIndexUtils.sanitizeSearchQuery(newElement);
       if (newElement.length === 1) {
         const firstElement = newElement[0];
         searchResult[firstElement] = InvertedIndexUtils
@@ -94,7 +164,7 @@ export default class InvertedIndexUtils {
     } else {
       terms.forEach((element) => {
         if (typeof element === 'string') {
-          element = element.split(' ');
+          element = InvertedIndexUtils.sanitizeSearchQuery(element);
           if (element.length === 1) {
             const firstElement = element[0];
             searchResult[firstElement] = InvertedIndexUtils
@@ -119,6 +189,14 @@ export default class InvertedIndexUtils {
     return searchResult;
   }
 
+  /**
+   * Checks if a value is in an object
+   * @static
+   * @param {any} letter - value
+   * @param {any} result - object
+   * @returns {boolean} - True if present and false otherwise
+   * @memberOf InvertedIndexUtils
+   */
   static contains(letter, result) {
     const resultKeys = Object.keys(result);
     let check = false;
