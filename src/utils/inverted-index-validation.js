@@ -23,7 +23,6 @@ export default class InvertedIndexValidation {
     }
   }
 
-
   /**
    * 
    * 
@@ -52,7 +51,7 @@ export default class InvertedIndexValidation {
   static isContentEmpty(doc) {
     const bookHeader = 'title';
     const bookContent = 'text';
-    if (doc[bookHeader].trim() === '' || doc[bookContent].trim() === '') {
+    if (doc[bookHeader] === '' || doc[bookContent] === '') {
       return true;
     }
     return false;
@@ -65,6 +64,7 @@ export default class InvertedIndexValidation {
     }
     return false;
   }
+
   static isInvalidFormat(doc) {
     const bookHeader = 'title';
     const bookContent = 'text';
@@ -123,32 +123,24 @@ export default class InvertedIndexValidation {
     return errorMessage;
   }
 
-  static hasError(docs) {
+  static hasSyntaxError(docs) {
     let errorMessage = '';
-    if (!InvertedIndexValidation.isValidJSON(docs)) {
-      errorMessage = InvertedIndexValidation.checkValidJSON(docs);
-      console.log('why are you not working');
-      console.log(InvertedIndexValidation.checkValidJSON(docs));
-      return errorMessage;
-    }
     if (InvertedIndexValidation.isEmpty(docs)) {
       errorMessage = InvertedIndexValidation.checkEmptyError(docs);
       return errorMessage;
     }
-    if (InvertedIndexValidation.isContentEmpty(docs)) {
+    if (InvertedIndexValidation.checkEmptyContent(docs)) {
       errorMessage = InvertedIndexValidation.checkEmptyContent(docs);
       return errorMessage;
     }
-    if (InvertedIndexValidation.isInvalidFormat(docs)) {
+    if (InvertedIndexValidation.checkFormatValidity(docs)) {
       errorMessage = InvertedIndexValidation.checkFormatValidity(docs);
       return errorMessage;
     }
-    if (InvertedIndexValidation.isInvalidContent(docs)) {
+    if (InvertedIndexValidation.checkContentValidity(docs)) {
       errorMessage = InvertedIndexValidation.checkContentValidity(docs);
       return errorMessage;
     }
     return false;
   }
-
-
 }

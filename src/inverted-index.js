@@ -12,15 +12,16 @@ export default class InvertedIndex {
     return this.filesIndexed || false;
   }
 
-  searchIndex(index, fileName = 'all', ...terms) {
+  searchIndex(index, fileName = '', ...terms) {
     let result = {};
-    if (fileName !== 'all') {
-      result[fileName] = InvertedIndexUtils.searchBook(index, fileName, ...terms);
-    } else {
+    const checkFileName = fileName || '';
+    if (!checkFileName || typeof checkFileName === 'undefined') {
       const bookList = Object.keys(index);
       bookList.forEach((book) => {
-        result[fileName] = InvertedIndexUtils.searchBook(index, book, ...terms);
+        result[book] = InvertedIndexUtils.searchBook(index, book, ...terms);
       });
+    } else {
+      result[fileName] = InvertedIndexUtils.searchBook(index, fileName, ...terms);
     }
     return result;
   }

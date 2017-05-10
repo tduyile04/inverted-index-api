@@ -72,7 +72,7 @@ export default class InvertedIndexUtils {
     if (InvertedIndexUtils.contains(item, index[fileName])) {
       result = index[fileName][item];
     } else {
-      result = false;
+      result = 'not found';
     }
     return result;
   }
@@ -80,18 +80,37 @@ export default class InvertedIndexUtils {
   static searchBook(index, fileName, ...terms) {
     let searchResult = {};
     if (terms.length === 1) {
-      const firstElement = terms[0];
-      searchResult[firstElement] = InvertedIndexUtils.findSearchItem(index, fileName, firstElement);
+      let newElement = terms[0];
+      newElement = newElement.split(' ');
+      if (newElement.length === 1) {
+        const firstElement = newElement[0];
+        searchResult[firstElement] = InvertedIndexUtils
+                                      .findSearchItem(index, fileName, firstElement);
+      } else {
+        newElement.forEach((element) => {
+          searchResult[element] = InvertedIndexUtils.findSearchItem(index, fileName, element);
+        });
+      }
     } else {
       terms.forEach((element) => {
         if (typeof element === 'string') {
-          searchResult[element] = InvertedIndexUtils.findSearchItem(index, fileName, element);
+          element = element.split(' ');
+          if (element.length === 1) {
+            const firstElement = element[0];
+            searchResult[firstElement] = InvertedIndexUtils
+                                          .findSearchItem(index, fileName, firstElement);
+          } else {
+            element.forEach((newElement) => {
+              searchResult[newElement] = InvertedIndexUtils
+                                          .findSearchItem(index, fileName, newElement);
+            });
+          }
         }
         if (element.constructor === Array) {
           element.forEach((singleton) => {
             if (typeof element === 'string') {
               searchResult[singleton] = InvertedIndexUtils
-                                       .findSearchItem(index, fileName, singleton);
+                                          .findSearchItem(index, fileName, singleton);
             }
           });
         }

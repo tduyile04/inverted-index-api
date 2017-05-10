@@ -7,7 +7,6 @@ import InvertedIndex from '../inverted-index';
 import InvertedIndexValidation from '../utils/inverted-index-validation';
 
 // dotenv.config();
-
 const upload = multer();
 const indexDatabase = fs.readFileSync('./src/routes/database.json');
 let database = JSON.parse(indexDatabase);
@@ -19,21 +18,35 @@ function hasError(req, res, next) {
   const files = req.files;
   const fileLength = files.length;
   if (fileLength === 1) {
-    const file = files[0];
-    if (InvertedIndexValidation.hasError(file)) {
-      const errorMessage = InvertedIndexValidation.hasError(file);
+    let file;
+    try {
+      file = JSON.parse(files[0].buffer);
+    } catch (e) {
+      res.json({ error: 'Invalid JSON' });
+      res.end();
+    }
+    if (InvertedIndexValidation.hasSyntaxError(file)) {
+      const errorMessage = InvertedIndexValidation.hasSyntaxError(file);
       res.json({ error: errorMessage });
       res.end();
+    } else {
+      next();
     }
   } else if (fileLength > 1) {
     files.forEach((file) => {
-      if (InvertedIndexValidation.hasError(file)) {
-        const errorMessage = InvertedIndexValidation.hasError(file);
+      let parsedFile;
+      try {
+        parsedFile = JSON.parse(file.buffer);
+      } catch (e) {
+        res.json({ error: 'Invalid JSON' });
+        res.end();
+      }
+      if (InvertedIndexValidation.hasSyntaxError(parsedFile)) {
+        const errorMessage = InvertedIndexValidation.hasSyntaxError(parsedFile);
         res.json({ error: errorMessage });
         res.end();
       }
     });
-  } else {
     next();
   }
 }
@@ -64,60 +77,6 @@ app.get('/', (req, res) => {
   res.send('Use the /api/create or the /api/search route');
 });
 
-app.get('/api/create', (req, res) => {
-  const book = [
-    {
-      title: 'harry porter',
-      text: 'The boy who was destined to defeat Lord Voldermort'
-    },
-    {
-      title: 'The Sorceres stone',
-      text: 'The first book of the harry porter series'
-    },
-    {
-      title: 'a b c',
-      text: 'd e f x'
-    },
-    {
-      title: 'a g b',
-      text: 'd,f x y z x'
-    }
-  ];
-
-  const invertedIndex = new InvertedIndex();
-  invertedIndex.createIndex('book', book);
-  res.json(invertedIndex.filesIndexed);
-});
-
-app.get('/api/search', (req, res) => {
-  const index = {
-    book: { harry: [0, 1], porter: [0, 1], the: [0, 1], boy: [0], who: [0], was: [0], destined: [0],
-      to: [0], defeat: [0], lord: [0], voldermort: [0], sorceres: [1], stone: [1],
-      first: [1], book: [1], of: [1], series: [1] }
-  };
-  const book = [
-    {
-      title: 'harry porter',
-      text: 'The boy who was destined to defeat Lord Voldermort'
-    },
-    {
-      title: 'The Sorceres stone',
-      text: 'The first book of the harry porter series'
-    },
-    {
-      title: 'a b c',
-      text: 'd e f x'
-    },
-    {
-      title: 'a g b',
-      text: 'd,f x y z x'
-    }
-  ];
-  const invertedIndex = new InvertedIndex();
-  invertedIndex.createIndex('book', book);
-  const searchResults = invertedIndex.searchIndex(index, 'book', 'harry');
-  res.json(searchResults);
-});
 
 app.post('/api/create', upload.array('books', 12), hasError, (req, res) => {
   const invertedIndex = new InvertedIndex();
