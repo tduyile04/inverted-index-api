@@ -16,8 +16,6 @@ var _multer = require('multer');
 
 var _multer2 = _interopRequireDefault(_multer);
 
-var _dotenv = require('dotenv');
-
 var _invertedIndex = require('../inverted-index');
 
 var _invertedIndex2 = _interopRequireDefault(_invertedIndex);
@@ -28,108 +26,66 @@ var _invertedIndexValidation2 = _interopRequireDefault(_invertedIndexValidation)
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// dotenv.config();
+// import hasError from './middleware/hasError';
 
 var upload = (0, _multer2.default)();
-var indexDatabase = _fs2.default.readFileSync('./src/routes/database.json');
-var database = JSON.parse(indexDatabase);
-var port = void 0;
+// const indexDatabase = fs.readFileSync('./src/routes/database.json');
+// let database = JSON.parse(indexDatabase);
 
 var app = (0, _express2.default)();
-
-function hasError(req, res, next) {
-  var files = req.files;
-  var fileLength = files.length;
-  if (fileLength === 1) {
-    var file = files[0];
-    if (_invertedIndexValidation2.default.hasError(file)) {
-      var errorMessage = _invertedIndexValidation2.default.hasError(file);
-      res.json({ error: errorMessage });
-      res.end();
-    }
-  } else if (fileLength > 1) {
-    files.forEach(function (file) {
-      if (_invertedIndexValidation2.default.hasError(file)) {
-        var _errorMessage = _invertedIndexValidation2.default.hasError(file);
-        res.json({ error: _errorMessage });
-        res.end();
-      }
-    });
-  } else {
-    next();
-  }
-}
-
-// switch (process.env.NODE_ENV) {
-//   case 'test':
-//     app.set(port, process.env.PORT_TEST);
-//     break;
-//   case 'development':
-//     app.set(port, process.env.PORT_DEV);
-//     break;
-//   case 'production':
-//     app.set(port, process.env.PORT_PROD);
-//     break;
-//   default:
-//     app.set(port, process.env.PORT_DEV);
-//     break;
-// }
 
 app.listen(3000, function () {
   console.log('Listening on port 3000');
 });
 
+/**
+ * A middleware that validates the users input and sends it to the next function
+ * if the input is rightly formatted else terminates with the appropriate
+ * error message
+ * @param {any} req - A stream of the request sent in by the user
+ * @param {any} res - A stream of the response sent by the server
+ * @param {any} next - A call to the next middleware function
+ * @returns{res} - error message if the input is bad
+ */
+function hasError(req, res, next) {
+  var files = req.files;
+  var fileLength = files.length;
+  if (fileLength === 1) {
+    var file = void 0;
+    try {
+      file = JSON.parse(files[0].buffer);
+    } catch (e) {
+      res.json({ error: 'Invalid JSON' });
+      res.end();
+    }
+    if (_invertedIndexValidation2.default.hasSyntaxError(file)) {
+      var errorMessage = _invertedIndexValidation2.default.hasSyntaxError(file);
+      res.json({ error: errorMessage });
+      res.end();
+    } else {
+      next();
+    }
+  } else if (fileLength > 1) {
+    files.forEach(function (file) {
+      var parsedFile = void 0;
+      try {
+        parsedFile = JSON.parse(file.buffer);
+      } catch (e) {
+        res.json({ error: 'Invalid JSON' });
+        res.end();
+      }
+      if (_invertedIndexValidation2.default.hasSyntaxError(parsedFile)) {
+        var _errorMessage = _invertedIndexValidation2.default.hasSyntaxError(parsedFile);
+        res.json({ error: _errorMessage });
+        res.end();
+      }
+    });
+    next();
+  }
+}
+
 app.use(_bodyParser2.default.json());
 app.use(_bodyParser2.default.urlencoded({ extended: false }));
-
-app.get('/', function (req, res) {
-  res.send('Use the /api/create or the /api/search route');
-});
-
-app.get('/api/create', function (req, res) {
-  var book = [{
-    title: 'harry porter',
-    text: 'The boy who was destined to defeat Lord Voldermort'
-  }, {
-    title: 'The Sorceres stone',
-    text: 'The first book of the harry porter series'
-  }, {
-    title: 'a b c',
-    text: 'd e f x'
-  }, {
-    title: 'a g b',
-    text: 'd,f x y z x'
-  }];
-
-  var invertedIndex = new _invertedIndex2.default();
-  invertedIndex.createIndex('book', book);
-  res.json(invertedIndex.filesIndexed);
-});
-
-app.get('/api/search', function (req, res) {
-  var index = {
-    book: { harry: [0, 1], porter: [0, 1], the: [0, 1], boy: [0], who: [0], was: [0], destined: [0],
-      to: [0], defeat: [0], lord: [0], voldermort: [0], sorceres: [1], stone: [1],
-      first: [1], book: [1], of: [1], series: [1] }
-  };
-  var book = [{
-    title: 'harry porter',
-    text: 'The boy who was destined to defeat Lord Voldermort'
-  }, {
-    title: 'The Sorceres stone',
-    text: 'The first book of the harry porter series'
-  }, {
-    title: 'a b c',
-    text: 'd e f x'
-  }, {
-    title: 'a g b',
-    text: 'd,f x y z x'
-  }];
-  var invertedIndex = new _invertedIndex2.default();
-  invertedIndex.createIndex('book', book);
-  var searchResults = invertedIndex.searchIndex(index, 'book', 'harry');
-  res.json(searchResults);
-});
 
 app.post('/api/create', upload.array('books', 12), hasError, function (req, res) {
   var invertedIndex = new _invertedIndex2.default();
@@ -165,7 +121,7 @@ app.post('/api/search', function (req, res) {
   var index = JSON.parse(db);
   var searchResult = '';
   if (typeof fileName === 'undefined') {
-    searchResult = invertedIndex.searchIndex(index, 'all', searchTerms);
+    searchResult = invertedIndex.searchIndex(index, '', searchTerms);
   } else {
     searchResult = invertedIndex.searchIndex(index, fileName, searchTerms);
   }

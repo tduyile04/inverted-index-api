@@ -9,8 +9,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- * 
- * 
+ * A collection of validations to sanitize document input
  * @class InvertedIndexValidation
  */
 var InvertedIndexValidation = function () {
@@ -23,12 +22,10 @@ var InvertedIndexValidation = function () {
 
 
     /**
-     * 
-     * 
+     * This methods check if a document is valid JSON
      * @static
-     * @param {any} docs
-     * @returns
-     * 
+     * @param {any} docs - The document to be validated
+     * @returns {boolean} - True if the document is valid JSON or false otherwise
      * @memberOf InvertedIndexValidation
      */
     value: function isValidJSON(docs) {
@@ -41,12 +38,10 @@ var InvertedIndexValidation = function () {
     }
 
     /**
-     * 
-     * 
+     * This method checks if the document is empty
      * @static
-     * @param {any} docs
-     * @returns
-     * 
+     * @param {any} docs - The document to be validated
+     * @returns {boolean} - True if the document is empty or false otherwise
      * @memberOf InvertedIndexValidation
      */
 
@@ -60,12 +55,10 @@ var InvertedIndexValidation = function () {
     }
 
     /**
-     * 
-     * 
+     * This method checks if any of the document content is left blank
      * @static
-     * @param {any} doc
-     * @returns
-     * 
+     * @param {any} doc - The document to be validated
+     * @returns {boolean} - True if any of the document's content is empty or false otherwise
      * @memberOf InvertedIndexValidation
      */
 
@@ -74,11 +67,20 @@ var InvertedIndexValidation = function () {
     value: function isContentEmpty(doc) {
       var bookHeader = 'title';
       var bookContent = 'text';
-      if (doc[bookHeader].trim() === '' || doc[bookContent].trim() === '') {
+      if (doc[bookHeader] === '' || doc[bookContent] === '') {
         return true;
       }
       return false;
     }
+
+    /**
+     * This method checks if any of the document has an invalid content type
+     * @static
+     * @param {any} doc - The document to be validated
+     * @returns {boolean} - True if all contents passes the validation or false otherwise
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
     key: 'isInvalidContent',
     value: function isInvalidContent(doc) {
@@ -89,20 +91,40 @@ var InvertedIndexValidation = function () {
       }
       return false;
     }
+
+    /**
+     * This method checks if the document is in the right format
+     * @static
+     * @param {any} doc - The document to be validated
+     * @returns {boolean} - True if the document is in the right format and false otherwise
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
     key: 'isInvalidFormat',
     value: function isInvalidFormat(doc) {
       var bookHeader = 'title';
       var bookContent = 'text';
-      var key = Object.keys(doc);
-      if (key.length !== 2) {
+      var keys = Object.keys(doc);
+      if (keys.length !== 2) {
         return true;
       }
-      if (key[0] !== bookHeader || key[1] !== bookContent) {
+      if (keys[0] !== bookHeader || keys[1] !== bookContent) {
+        return true;
+      }
+      if (!doc.bookHeader || !doc.bookContent) {
         return true;
       }
       return false;
     }
+    /**
+     * Provides suitable error message for invalid JSON documents
+     * @static
+     * @param {any} docs - The document to be validated
+     * @returns {string} - The appropriate error message
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
     key: 'checkValidJSON',
     value: function checkValidJSON(docs) {
@@ -112,6 +134,14 @@ var InvertedIndexValidation = function () {
       }
       return errorMessage;
     }
+    /**
+     * Provides suitable error message for empty documents
+     * @static
+     * @param {any} docs - The document to be validated
+     * @returns {string} - The appropriate error message
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
     key: 'checkEmptyError',
     value: function checkEmptyError(docs) {
@@ -122,62 +152,107 @@ var InvertedIndexValidation = function () {
       }
       return errorMessage;
     }
+
+    /**
+     * Provides suitable error message if document has empty contents
+     * @static
+     * @param {any} docs - The document to be validated
+     * @returns {string} - The appropriate error message
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
     key: 'checkEmptyContent',
     value: function checkEmptyContent(docs) {
       var errorMessage = '';
-      docs.forEach(function (doc) {
-        if (InvertedIndexValidation.isContentEmpty(doc)) {
-          errorMessage = 'Book title and text entry cannot be empty';
-        }
-      });
+      if (docs.length && docs.length > 1) {
+        docs.forEach(function (doc) {
+          if (InvertedIndexValidation.isContentEmpty(doc)) {
+            errorMessage = 'Book title and text entry cannot be empty';
+          }
+        });
+      }
+      if (InvertedIndexValidation.isContentEmpty(docs)) {
+        errorMessage = 'Book title and text entry cannot be empty';
+      }
       return errorMessage;
     }
+
+    /**
+     * Provides suitable error message if document has empty contents
+     * @static
+     * @param {any} docs - The document to be validated
+     * @returns {string} - The appropriate error message
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
     key: 'checkFormatValidity',
     value: function checkFormatValidity(docs) {
       var errorMessage = '';
-      docs.forEach(function (doc) {
-        if (InvertedIndexValidation.isInvalidFormat(doc)) {
-          errorMessage = 'The book must have both title and text properties';
-        }
-      });
+      if (docs.length && docs.length > 1) {
+        docs.forEach(function (doc) {
+          if (InvertedIndexValidation.isInvalidFormat(doc)) {
+            errorMessage = 'The book must have both title and text properties';
+          }
+        });
+      }
+      if (InvertedIndexValidation.isInvalidFormat(docs)) {
+        errorMessage = 'The book must have both title and text properties';
+      }
       return errorMessage;
     }
+
+    /**
+     * Provides suitable error message if document has invalid contents
+     * @static
+     * @param {any} docs - The document to be validated
+     * @returns {string} - The appropriate error message
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
     key: 'checkContentValidity',
     value: function checkContentValidity(docs) {
       var errorMessage = '';
-      docs.forEach(function (doc) {
-        if (InvertedIndexValidation.isInvalidContent(doc)) {
-          errorMessage = 'Only string inputs are accepted as title and text';
-        }
-      });
+      if (docs.length && docs.length > 1) {
+        docs.forEach(function (doc) {
+          if (InvertedIndexValidation.isInvalidContent(doc)) {
+            errorMessage = 'Only string inputs are accepted as title and text';
+          }
+        });
+      }
+      if (InvertedIndexValidation.isInvalidContent(docs)) {
+        errorMessage = 'Only string inputs are accepted as title and text';
+      }
       return errorMessage;
     }
+
+    /**
+     * Bundles the syntax validations into one functionality
+     * @static
+     * @param {any} docs - The document to be validated
+     * @returns {string} - The appropriate error message
+     * @memberOf InvertedIndexValidation
+     */
+
   }, {
-    key: 'hasError',
-    value: function hasError(docs) {
+    key: 'hasSyntaxError',
+    value: function hasSyntaxError(docs) {
       var errorMessage = '';
-      if (!InvertedIndexValidation.isValidJSON(docs)) {
-        errorMessage = InvertedIndexValidation.checkValidJSON(docs);
-        console.log('why are you not working');
-        console.log(InvertedIndexValidation.checkValidJSON(docs));
-        return errorMessage;
-      }
       if (InvertedIndexValidation.isEmpty(docs)) {
         errorMessage = InvertedIndexValidation.checkEmptyError(docs);
         return errorMessage;
       }
-      if (InvertedIndexValidation.isContentEmpty(docs)) {
+      if (InvertedIndexValidation.checkEmptyContent(docs)) {
         errorMessage = InvertedIndexValidation.checkEmptyContent(docs);
         return errorMessage;
       }
-      if (InvertedIndexValidation.isInvalidFormat(docs)) {
+      if (InvertedIndexValidation.checkFormatValidity(docs)) {
         errorMessage = InvertedIndexValidation.checkFormatValidity(docs);
         return errorMessage;
       }
-      if (InvertedIndexValidation.isInvalidContent(docs)) {
+      if (InvertedIndexValidation.checkContentValidity(docs)) {
         errorMessage = InvertedIndexValidation.checkContentValidity(docs);
         return errorMessage;
       }

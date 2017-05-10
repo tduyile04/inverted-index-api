@@ -3,9 +3,9 @@ const babel = require('gulp-babel');
 const clean = require('gulp-clean');
 const jasmine = require('gulp-jasmine');
 const injectModules = require('gulp-inject-modules');
-const istanbulReport = require('gulp-istanbul-report');
-const coverageFile = require('./coverage/coverage.json');
 const istanbul = require('gulp-istanbul');
+const coveralls = require('gulp-coveralls');
+const nodemon = require('gulp-nodemon');
 
 gulp.task('default', ['watch-src-converters', 'watch-test-converters']);
 
@@ -55,12 +55,17 @@ gulp.task('run-tests', () => {
       .pipe(jasmine());
 });
 
-// gulp.task('serve', () => {
-//   gulp.src('./build/src/routes/app.js')
-//       .pipe(node);
-// });
+gulp.task('serve', () => {
+  nodemon({
+    script: './build/src/routes/app.js',
+    ext: 'js json',
+    ignore: [
+      'node_modules/'
+    ]
+  });
+});
 
-gulp.task('coverage', (cb) => {
+gulp.task('coverage', () => {
   gulp.src('./build/src/inverted-index.js')
     .pipe(istanbul())
     .pipe(istanbul.hookRequire())
@@ -71,6 +76,9 @@ gulp.task('coverage', (cb) => {
       .pipe(jasmine())
       .pipe(istanbul.writeReports())
       .pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }))
-      .on('end', cb);
+      .on('end', () => {
+        gulp.src('coverage/**/lcov.info')
+        .pipe(coveralls());
+      });
     });
 });

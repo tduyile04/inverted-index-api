@@ -14,12 +14,30 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ * Creates index for files and search for words in files already indexed
+ * @export
+ * @class InvertedIndex
+ */
 var InvertedIndex = function () {
+  /**
+   * Creates an instance of InvertedIndex.
+   * Initializes a fileIndexed object that stores created index
+   * @memberOf InvertedIndex
+   */
   function InvertedIndex() {
     _classCallCheck(this, InvertedIndex);
 
     this.filesIndexed = {};
   }
+  /**
+   * Creates index for files
+   * @param {any} fileName - The name of the file to be indexed
+   * @param {any} fileContent - The content of the file to be indexed
+   * @returns {Object} - The map of the files indexed to its unique tokens
+   * @memberOf InvertedIndex
+   */
+
 
   _createClass(InvertedIndex, [{
     key: 'createIndex',
@@ -28,8 +46,20 @@ var InvertedIndex = function () {
       var uniqueContent = _invertedIndexUtils2.default.produceUniqueTokens(bookTokens);
       var index = _invertedIndexUtils2.default.convertTokensToIndexes(uniqueContent);
       this.filesIndexed[fileName] = index;
-      return this.filesIndexed || false;
+      return this.filesIndexed;
     }
+
+    /**
+     * 
+     * 
+     * @param {any} index - A map of the unique tokens to its corresponding index
+     * @param {string} fileName - The name of the file(s) to be indexed
+     * @param {any} terms - The required value(s) to be searched
+     * @returns {Object} -  A map of the searched book to its index if found and
+     *                     'not found' if not present in the file
+     * @memberOf InvertedIndex
+     */
+
   }, {
     key: 'searchIndex',
     value: function searchIndex(index) {
@@ -37,16 +67,17 @@ var InvertedIndex = function () {
         terms[_key - 2] = arguments[_key];
       }
 
-      var fileName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all';
+      var fileName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
 
       var result = {};
-      if (fileName !== 'all') {
-        result[fileName] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, fileName].concat(terms));
-      } else {
+      var checkFileName = fileName || '';
+      if (!checkFileName || typeof checkFileName === 'undefined') {
         var bookList = Object.keys(index);
         bookList.forEach(function (book) {
-          result[fileName] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, book].concat(terms));
+          result[book] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, book].concat(terms));
         });
+      } else {
+        result[fileName] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, fileName].concat(terms));
       }
       return result;
     }

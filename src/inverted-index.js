@@ -30,8 +30,6 @@ export default class InvertedIndex {
   }
 
   /**
-   * 
-   * 
    * @param {any} index - A map of the unique tokens to its corresponding index
    * @param {string} fileName - The name of the file(s) to be indexed
    * @param {any} terms - The required value(s) to be searched
@@ -40,16 +38,16 @@ export default class InvertedIndex {
    * @memberOf InvertedIndex
    */
   searchIndex(index, fileName = '', ...terms) {
-    let result = {};
+    this.result = {};
     const checkFileName = fileName || '';
     if (!checkFileName || typeof checkFileName === 'undefined') {
       const bookList = Object.keys(index);
       bookList.forEach((book) => {
-        result[book] = InvertedIndexUtils.searchBook(index, book, ...terms);
+        this.result[book] = InvertedIndexUtils.searchBook(index, book, ...terms);
       });
     } else {
-      result[fileName] = InvertedIndexUtils.searchBook(index, fileName, ...terms);
+      this.result[fileName] = InvertedIndexUtils.searchBook(index, fileName, ...terms);
     }
-    return result;
+    return this.result;
   }
 }

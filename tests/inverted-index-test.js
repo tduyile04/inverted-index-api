@@ -1,7 +1,6 @@
 import expect from 'expect';
 import should from 'should';
 import supertest from 'supertest';
-import fs from 'fs';
 import InvertedIndex from '../src/inverted-index';
 import app from '../src/routes/app';
 import InvertedIndexValidation from '../src/utils/inverted-index-validation';
@@ -13,6 +12,7 @@ import invalidFormat from '../fixtures/invalid-format.json';
 import invalidContent from '../fixtures/invalid-content.json';
 import bookFile from '../fixtures/book1.json';
 import file from '../fixtures/test.json';
+import completeIndex from '../fixtures/db.json';
 
 
 const index = new InvertedIndex();
@@ -44,12 +44,9 @@ describe('Inverted index test', () => {
       const result = ['a b c d e f x', 'a g b d,f x y z x'];
       expect(InvertedIndexUtils.concatTitleAndText(file)).toEqual(result);
     });
-    it('should return the correct error message if the file is malformed', () => {
-      const errorMessage = 'Invalid JSON';
-      console.log(InvertedIndexValidation.isValidJSON(invalid));
-      console.log(InvertedIndexValidation.checkValidJSON(invalid));
-      console.log(InvertedIndexValidation.hasError(invalid));
-      expect(InvertedIndexValidation.hasError(invalid)).toEqual(errorMessage);
+    it('should return the correct error message if the file has any syntax error', () => {
+      const errorMessage = 'Empty documents are invalid';
+      expect(InvertedIndexValidation.hasSyntaxError(empty)).toEqual(errorMessage);
     });
   });
 
@@ -80,13 +77,11 @@ describe('Inverted index test', () => {
   const index2 = new InvertedIndex();
   const index3 = new InvertedIndex();
   const firstIndex = index2.createIndex('test.json', file);
-  const firsthalf = index3.createIndex('test.json', file);
-  const secondHalf = index3.createIndex('book1.json', bookFile);
-  const indexData = index3.filesIndexed;
+  const data = index3.createIndex('book1.json', bookFile);
 
   describe('Search index', () => {
     it('should return false if the search term cannot be found in the book', () => {
-      expect(index2.searchIndex(firstIndex, 'test.json', 'm')).toEqual({ 'test.json': { m: false } });
+      expect(index2.searchIndex(firstIndex, 'test.json', 'm')).toEqual({ 'test.json': { m: 'not found' } });
     });
     // it('should ensure that the passed in index is in the correct form', () => {
     //   expect(index.searchIndex({ book: { page: ['random', 'anonymous'] } }, 'test.json', 'm')).toEqual('invalid index');
@@ -95,15 +90,15 @@ describe('Inverted index test', () => {
       expect(index2.searchIndex(firstIndex, 'test.json', 'a')).toEqual({ 'test.json': { a: [0, 1] } });
     });
     it('should return the correct result if the search term is a list of words', () => {
-      expect(index2.searchIndex(firstIndex, 'test.json', 'm', 'a')).toEqual({ 'test.json': { m: false, a: [0, 1] } });
+      expect(index2.searchIndex(firstIndex, 'test.json', 'm', 'a')).toEqual({ 'test.json': { m: 'not found', a: [0, 1] } });
     });
-    // it('should be able to handle a varying number of search arguments and return correct results', () => {
-    //   expect(index.searchIndex(firstIndex, 'test.json', 'm', ['a', 'b'], 'c')).toEqual({ 'test.json': { m: false, a: [0, 1], b: [0, 1], c: [0] } });
-    // });
+    it('should be able to handle a varying number of search arguments and return correct results', () => {
+      expect(index3.searchIndex(data, 'book1.json', 'harry porter', 'the', 'a')).toEqual({ 'book1.json': { harry: [0, 1], porter: [0, 1], the: [0, 1], a: 'not found' } });
+    });
     // it('should return a search of all the books that have been indexed if no fileName is specified', () => {
-    //   expect(index.searchIndex(indexData, 'a', 'the')).toEqual(
-    //     { 'test.json': { a: [0, 1], the: false } }, { 'book1.json': { a: false, the: [0, 1] }
-    //     });
+    //   expect(index.searchIndex(completeIndex, '', 'a', 'the')).toEqual(
+    //     { 'book1.json': { a: 'not found', the: [0, 1] } }, { 'test.json': { a: [0, 1], the: 'not found' } }
+    //     );
     // });
   });
 });
@@ -113,7 +108,7 @@ describe('Inverted index test', () => {
 //     it('should return valid index data for /create/index...', (done) => {
 //       supertest(app)
 //       .post('/create/index')
-//       .send('test.json')
+//       .send('book1.json')
 //       .expect(200)
 //       .expect(
 //         { 'book1.json':
