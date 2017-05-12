@@ -13,4 +13,4 @@ before_script:
     - npm install
 
 after_script: 
-    - ./node_modules/.bin/gulp coverage
+    - npm run coveralls

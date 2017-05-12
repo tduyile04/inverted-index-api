@@ -8,9 +8,8 @@ import InvertedIndexValidation from '../utils/inverted-index-validation';
 const upload = multer();
 const app = express();
 
-const server = app.listen(3000, () => {
-  console.log('Listening on port 3000');
-});
+const port = process.env.PORT || 3000;
+const server = app.listen(port);
 
 /**
  * A middleware that validates the users input and sends it to the next function
@@ -29,11 +28,14 @@ function hasError(req, res, next) {
     try {
       file = JSON.parse(files[0].buffer);
     } catch (e) {
+      res.status(400);
       res.json({ error: 'Invalid JSON' });
       res.end();
     }
+
     if (InvertedIndexValidation.hasSyntaxError(file)) {
       const errorMessage = InvertedIndexValidation.hasSyntaxError(file);
+      res.status(400);
       res.json({ error: errorMessage });
       res.end();
     } else {
@@ -45,11 +47,14 @@ function hasError(req, res, next) {
       try {
         parsedFile = JSON.parse(file.buffer);
       } catch (e) {
+        res.status(400);
         res.json({ error: 'Invalid JSON' });
         res.end();
       }
+
       if (InvertedIndexValidation.hasSyntaxError(parsedFile)) {
         const errorMessage = InvertedIndexValidation.hasSyntaxError(parsedFile);
+        res.status(400);
         res.json({ error: errorMessage });
         res.end();
       }
@@ -65,14 +70,17 @@ app.post('/api/create', upload.array('books', 12), hasError, (req, res) => {
   const invertedIndex = new InvertedIndex();
   const files = req.files;
   const numFile = files.length;
+
   if (numFile === 1) {
     const newFile = JSON.parse(files[0].buffer);
     const fileTitle = files[0].originalname;
     if (!fileTitle) {
+      res.status(401);
       res.json({ error: 'File title cannot be empty' });
       res.end();
     }
     if (!newFile) {
+      res.status(401);
       res.json({ error: 'File content cannot be empty' });
       res.end();
     }
@@ -80,16 +88,19 @@ app.post('/api/create', upload.array('books', 12), hasError, (req, res) => {
     const addDatabase = JSON.stringify(singleDatabase);
     fs.writeFileSync('./src/routes/database.json', addDatabase);
   }
+
   if (numFile > 1) {
     let fileTitle = '';
     files.forEach((file) => {
       const parsedFile = JSON.parse(file.buffer);
       fileTitle = file.originalname;
       if (!fileTitle) {
+        res.status(401);
         res.json({ error: 'File title cannot be empty' });
         res.end();
       }
       if (!parsedFile) {
+        res.status(401);
         res.json({ error: 'File content cannot be empty' });
         res.end();
       }
@@ -98,6 +109,7 @@ app.post('/api/create', upload.array('books', 12), hasError, (req, res) => {
       fs.writeFileSync('./src/routes/database.json', addDatabase);
     });
   }
+
   let currentDatabase = fs.readFileSync('./src/routes/database.json');
   currentDatabase = JSON.parse(currentDatabase);
   res.json(currentDatabase);
@@ -110,17 +122,22 @@ app.post('/api/search', (req, res) => {
   const db = fs.readFileSync('./src/routes/database.json');
   const index = JSON.parse(db);
   let searchResult = '';
+
   if (index === null) {
+    res.status(401);
     res.json({ error: 'No index has been created' });
   }
+
   if (typeof fileName === 'undefined') {
     if (!searchTerms) {
+      res.status(401);
       res.json({ error: 'Search query cannot be empty' });
       res.end();
     }
     searchResult = invertedIndex.searchIndex(index, '', searchTerms);
   } else {
     if (!searchTerms) {
+      res.status(401);
       res.json({ error: 'Search query cannot be empty' });
       res.end();
     }

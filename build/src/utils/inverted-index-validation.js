@@ -103,17 +103,17 @@ var InvertedIndexValidation = function () {
   }, {
     key: 'isInvalidFormat',
     value: function isInvalidFormat(doc) {
-      var bookHeader = 'title';
-      var bookContent = 'text';
       var keys = Object.keys(doc);
+      var titleCheck = Object.prototype.hasOwnProperty.call(doc, 'title');
+      var textCheck = Object.prototype.hasOwnProperty.call(doc, 'text');
       if (keys.length !== 2) {
         return true;
       }
-      if (keys[0] !== bookHeader || keys[1] !== bookContent) {
+      if (!titleCheck || !textCheck) {
         return true;
       }
-      if (!doc.bookHeader || !doc.bookContent) {
-        return true;
+      if (titleCheck && textCheck) {
+        return false;
       }
       return false;
     }
@@ -166,16 +166,21 @@ var InvertedIndexValidation = function () {
     value: function checkEmptyContent(docs) {
       var errorMessage = '';
       if (docs.length && docs.length > 1) {
-        docs.forEach(function (doc) {
-          if (InvertedIndexValidation.isContentEmpty(doc)) {
+        for (var i = 0; i < docs.length; i += 1) {
+          if (InvertedIndexValidation.isContentEmpty(docs[i])) {
             errorMessage = 'Book title and text entry cannot be empty';
+            return errorMessage;
           }
-        });
+        }
+        return false;
       }
-      if (InvertedIndexValidation.isContentEmpty(docs)) {
-        errorMessage = 'Book title and text entry cannot be empty';
+      if (docs.length === 1) {
+        if (InvertedIndexValidation.isContentEmpty(docs)) {
+          errorMessage = 'Book title and text entry cannot be empty';
+          return errorMessage;
+        }
+        return false;
       }
-      return errorMessage;
     }
 
     /**
@@ -191,16 +196,21 @@ var InvertedIndexValidation = function () {
     value: function checkFormatValidity(docs) {
       var errorMessage = '';
       if (docs.length && docs.length > 1) {
-        docs.forEach(function (doc) {
-          if (InvertedIndexValidation.isInvalidFormat(doc)) {
+        for (var i = 0; i < docs.length; i += 1) {
+          if (InvertedIndexValidation.isInvalidFormat(docs[i])) {
             errorMessage = 'The book must have both title and text properties';
+            return errorMessage;
           }
-        });
+        }
+        return false;
       }
-      if (InvertedIndexValidation.isInvalidFormat(docs)) {
-        errorMessage = 'The book must have both title and text properties';
+      if (docs.length === 1) {
+        if (InvertedIndexValidation.isInvalidFormat(docs)) {
+          errorMessage = 'The book must have both title and text properties';
+          return errorMessage;
+        }
+        return false;
       }
-      return errorMessage;
     }
 
     /**
@@ -216,16 +226,21 @@ var InvertedIndexValidation = function () {
     value: function checkContentValidity(docs) {
       var errorMessage = '';
       if (docs.length && docs.length > 1) {
-        docs.forEach(function (doc) {
-          if (InvertedIndexValidation.isInvalidContent(doc)) {
+        for (var i = 0; i < docs.length; i += 1) {
+          if (InvertedIndexValidation.isInvalidContent(docs[i])) {
             errorMessage = 'Only string inputs are accepted as title and text';
+            return errorMessage;
           }
-        });
+        }
+        return false;
       }
-      if (InvertedIndexValidation.isInvalidContent(docs)) {
-        errorMessage = 'Only string inputs are accepted as title and text';
+      if (docs.length === 1) {
+        if (InvertedIndexValidation.isInvalidContent(docs)) {
+          errorMessage = 'Only string inputs are accepted as title and text';
+          return errorMessage;
+        }
+        return false;
       }
-      return errorMessage;
     }
 
     /**

@@ -37,16 +37,18 @@ export default class InvertedIndex {
    *                     'not found' if not present in the file
    * @memberOf InvertedIndex
    */
-  searchIndex(index, fileName = '', ...terms) {
+  searchIndex(index, fileName, ...terms) {
     this.result = {};
-    const checkFileName = fileName || '';
-    if (!checkFileName || typeof checkFileName === 'undefined') {
+    const fileTitleExt = /[.json]/;
+    const fileNameCheck = arguments[1].match(fileTitleExt);
+    if (fileNameCheck) {
+      this.result[fileName] = InvertedIndexUtils.searchBook(index, fileName, ...terms);
+    }
+    if (!fileNameCheck) {
       const bookList = Object.keys(index);
       bookList.forEach((book) => {
         this.result[book] = InvertedIndexUtils.searchBook(index, book, ...terms);
       });
-    } else {
-      this.result[fileName] = InvertedIndexUtils.searchBook(index, fileName, ...terms);
     }
     return this.result;
   }

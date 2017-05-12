@@ -10,7 +10,7 @@
     "start": "node build/src/routes/app",
     "test": "jasmine build/tests/inverted-index-test.js",
     "coverage": "istanbul cover node_modules/jasmine/bin/jasmine.js build/tests/inverted-index-test.js",
-    "coveralls": "istanbul cover jasmine-node --captureExceptions spec/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "coveralls": "cat ./coverage/**/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
