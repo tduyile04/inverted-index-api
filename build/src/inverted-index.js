@@ -50,8 +50,6 @@ var InvertedIndex = function () {
     }
 
     /**
-     * 
-     * 
      * @param {any} index - A map of the unique tokens to its corresponding index
      * @param {string} fileName - The name of the file(s) to be indexed
      * @param {any} terms - The required value(s) to be searched
@@ -62,24 +60,26 @@ var InvertedIndex = function () {
 
   }, {
     key: 'searchIndex',
-    value: function searchIndex(index) {
+    value: function searchIndex(index, fileName) {
       for (var _len = arguments.length, terms = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
         terms[_key - 2] = arguments[_key];
       }
 
-      var fileName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var _this = this;
 
-      var result = {};
-      var checkFileName = fileName || '';
-      if (!checkFileName || typeof checkFileName === 'undefined') {
+      this.result = {};
+      var fileTitleExt = /[.json]/;
+      var fileNameCheck = arguments[1].match(fileTitleExt);
+      if (fileNameCheck) {
+        this.result[fileName] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, fileName].concat(terms));
+      }
+      if (!fileNameCheck) {
         var bookList = Object.keys(index);
         bookList.forEach(function (book) {
-          result[book] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, book].concat(terms));
+          _this.result[book] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, book].concat(terms));
         });
-      } else {
-        result[fileName] = _invertedIndexUtils2.default.searchBook.apply(_invertedIndexUtils2.default, [index, fileName].concat(terms));
       }
-      return result;
+      return this.result;
     }
   }]);
 
