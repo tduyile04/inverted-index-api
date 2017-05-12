@@ -12,8 +12,8 @@ export default class InvertedIndexUtils {
    * @memberOf InvertedIndexUtils
    */
   static removeDuplicates(arr) {
-    let check = {};
-    let result = [];
+    const check = {};
+    const result = [];
     arr.forEach((item) => {
       if (!check[item]) {
         check[item] = true;
@@ -102,8 +102,8 @@ export default class InvertedIndexUtils {
    * @memberOf InvertedIndexUtils
    */
   static convertTokensToIndexes(terms) {
-    let result = {};
-    let check = {};
+    const result = {};
+    const check = {};
 
     terms.forEach((term, index) => {
       term.forEach((member) => {
@@ -148,7 +148,7 @@ export default class InvertedIndexUtils {
    * @memberOf InvertedIndexUtils
    */
   static searchBook(index, fileName, ...terms) {
-    let searchResult = {};
+    const searchResult = {};
     if (terms.length === 1) {
       let newElement = terms[0];
       newElement = InvertedIndexUtils.sanitizeSearchQuery(newElement);

@@ -12,7 +12,7 @@ import invalidFormat from '../fixtures/invalid-format.json';
 import invalidContent from '../fixtures/invalid-content.json';
 import bookFile from '../fixtures/book1.json';
 import file from '../fixtures/test.json';
-import completeIndex from '../fixtures/db.json';
+import exampleFile from '../fixtures/example.json';
 
 
 const index = new InvertedIndex();
@@ -73,19 +73,40 @@ describe('Inverted index test', () => {
           series: [1] }
         });
     });
+    it('should ensure that the right index was created', () => {
+      const newIndex = new InvertedIndex();
+      const result = {
+        'example.json':
+        {
+          an: [0, 1],
+          the: [0, 1],
+          of: [0, 1],
+          inquiry: [0],
+          into: [0],
+          wealth: [0],
+          nations: [0],
+          menace: [1],
+          example: [1],
+          bad: [1]
+        } };
+      expect(newIndex.createIndex('example.json', exampleFile)).toEqual(result);
+    });
   });
   const index2 = new InvertedIndex();
   const index3 = new InvertedIndex();
+  const index4 = new InvertedIndex();
   const firstIndex = index2.createIndex('test.json', file);
   const data = index3.createIndex('book1.json', bookFile);
+  const exampleIndex = index4.createIndex('example.json', exampleFile);
 
   describe('Search index', () => {
     it('should return false if the search term cannot be found in the book', () => {
       expect(index2.searchIndex(firstIndex, 'test.json', 'm')).toEqual({ 'test.json': { m: 'not found' } });
     });
-    // it('should ensure that the passed in index is in the correct form', () => {
-    //   expect(index.searchIndex({ book: { page: ['random', 'anonymous'] } }, 'test.json', 'm')).toEqual('invalid index');
-    // });
+    it('should ensure that the passed in index is in the correct form', () => {
+      const result = { 'example.json': { the: [0, 1], example: [1], term: 'not found', wealth: [0] } };
+      expect(index.searchIndex(exampleIndex, 'example.json', 'the', 'example', 'term', 'wealth')).toEqual(result);
+    });
     it('should return the correct result if the search term is a single word', () => {
       expect(index2.searchIndex(firstIndex, 'test.json', 'a')).toEqual({ 'test.json': { a: [0, 1] } });
     });

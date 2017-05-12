@@ -68,6 +68,14 @@ app.post('/api/create', upload.array('books', 12), hasError, (req, res) => {
   if (numFile === 1) {
     const newFile = JSON.parse(files[0].buffer);
     const fileTitle = files[0].originalname;
+    if (!fileTitle) {
+      res.json({ error: 'File title cannot be empty' });
+      res.end();
+    }
+    if (!newFile) {
+      res.json({ error: 'File content cannot be empty' });
+      res.end();
+    }
     const singleDatabase = invertedIndex.createIndex(fileTitle, newFile);
     const addDatabase = JSON.stringify(singleDatabase);
     fs.writeFileSync('./src/routes/database.json', addDatabase);
@@ -77,6 +85,14 @@ app.post('/api/create', upload.array('books', 12), hasError, (req, res) => {
     files.forEach((file) => {
       const parsedFile = JSON.parse(file.buffer);
       fileTitle = file.originalname;
+      if (!fileTitle) {
+        res.json({ error: 'File title cannot be empty' });
+        res.end();
+      }
+      if (!parsedFile) {
+        res.json({ error: 'File content cannot be empty' });
+        res.end();
+      }
       const multipleDatabase = invertedIndex.createIndex(fileTitle, parsedFile);
       const addDatabase = JSON.stringify(multipleDatabase);
       fs.writeFileSync('./src/routes/database.json', addDatabase);
@@ -98,8 +114,16 @@ app.post('/api/search', (req, res) => {
     res.json({ error: 'No index has been created' });
   }
   if (typeof fileName === 'undefined') {
+    if (!searchTerms) {
+      res.json({ error: 'Search query cannot be empty' });
+      res.end();
+    }
     searchResult = invertedIndex.searchIndex(index, '', searchTerms);
   } else {
+    if (!searchTerms) {
+      res.json({ error: 'Search query cannot be empty' });
+      res.end();
+    }
     searchResult = invertedIndex.searchIndex(index, fileName, searchTerms);
   }
   res.json(searchResult);
