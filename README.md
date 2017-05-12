@@ -1,0 +1,2 @@
+# inverted-index-api
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/04c565e40be4499d8500509b262b9c16)](https://www.codacy.com/app/tolupatrick004/inverted-index-api?utm_source=github.com&utm_medium=referral&utm_content=tolupatrick004/inverted-index-api&utm_campaign=badger)
