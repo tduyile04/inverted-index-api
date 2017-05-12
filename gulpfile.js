@@ -12,14 +12,14 @@ gulp.task('default', ['watch-src-converters', 'watch-test-converters']);
 
 gulp.task('src-converter', ['clean-src'], () => {
   return gulp.src('./src/**/*.js')
-             .pipe(babel())
-             .pipe(gulp.dest('./build/src'));
+        .pipe(babel())
+        .pipe(gulp.dest('./build/src'));
 });
 
 gulp.task('test-converter', ['clean-test'], () => {
   return gulp.src('./tests/inverted-index-test.js')
-             .pipe(babel())
-             .pipe(gulp.dest('./build/tests'));
+        .pipe(babel())
+        .pipe(gulp.dest('./build/tests'));
 });
 
 gulp.task('watch-src-converters', () => {
@@ -31,22 +31,22 @@ gulp.task('watch-test-converters', () => {
 });
 
 gulp.task('build-fixtures', () => {
-  gulp.src('./fixtures/**/*.json')
-      .pipe(gulp.dest('./build/fixtures'));
+  return gulp.src('./fixtures/**/*.json')
+        .pipe(gulp.dest('./build/fixtures'));
 });
 
 gulp.task('clean', () => {
-  return gulp.src('./build')
-             .pipe(clean());
+  gulp.src('./build')
+      .pipe(clean());
 });
 
 gulp.task('clean-test', () => {
-  return gulp.src('./build/tests')
-             .pipe(clean());
+  gulp.src('./build/tests')
+       .pipe(clean());
 });
 gulp.task('clean-src', () => {
-  return gulp.src('./build/src')
-             .pipe(clean());
+  gulp.src('./build/src')
+      .pipe(clean());
 });
 
 gulp.task('run-tests', () => {

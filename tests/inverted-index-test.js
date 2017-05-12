@@ -1,5 +1,4 @@
 import expect from 'expect';
-import should from 'should';
 import supertest from 'supertest';
 import InvertedIndex from '../src/inverted-index';
 import app from '../src/routes/app';

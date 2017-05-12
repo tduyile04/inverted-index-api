@@ -94,7 +94,6 @@ export default class InvertedIndexUtils {
   }
 
   /**
-   * 
    * Converts the grouped documents of unique tokens into an index
    * @static
    * @param {any} terms - An array of grouped unique tokens
@@ -152,6 +151,7 @@ export default class InvertedIndexUtils {
     if (terms.length === 1) {
       let newElement = terms[0];
       newElement = InvertedIndexUtils.sanitizeSearchQuery(newElement);
+
       if (newElement.length === 1) {
         const firstElement = newElement[0];
         searchResult[firstElement] = InvertedIndexUtils
@@ -161,7 +161,9 @@ export default class InvertedIndexUtils {
           searchResult[element] = InvertedIndexUtils.findSearchItem(index, fileName, element);
         });
       }
-    } else {
+    }
+
+    if (terms.length > 1) {
       terms.forEach((element) => {
         if (typeof element === 'string') {
           element = InvertedIndexUtils.sanitizeSearchQuery(element);
@@ -176,6 +178,7 @@ export default class InvertedIndexUtils {
             });
           }
         }
+
         if (element.constructor === Array) {
           element.forEach((singleton) => {
             if (typeof element === 'string') {

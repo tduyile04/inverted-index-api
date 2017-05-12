@@ -21,12 +21,17 @@ An inverted index is an index into a set of documents of the words in the docume
     Express.js
     EcmaScript 6
     Gulp (Task runner)
+    Postman
 
 ## Local Development
 
     Install npm dependencies npm install
     To run the app: gulp serve
     To run the tests run: gulp run-tests
+
+## Credits
+
+    Uloaku Enyingwa (LFA)
 
 ## Contributing
 
