@@ -1,5 +1,5 @@
-[![Coverage Status](https://coveralls.io/repos/github/tolupatrick004/inverted-index-api/badge.svg?branch=master)](https://coveralls.io/github/tolupatrick004/inverted-index-api?branch=master)
-[![Build Status](https://travis-ci.org/tolupatrick004/inverted-index-api.svg?branch=master)](https://travis-ci.org/tolupatrick004/inverted-index-api) 
+[![Coverage Status](https://coveralls.io/repos/github/tolupatrick004/inverted-index-api/badge.svg?branch=feedback)](https://coveralls.io/github/tolupatrick004/inverted-index-api?branch=feedback)
+[![Build Status](https://travis-ci.org/tolupatrick004/inverted-index-api.svg?branch=feedback)](https://travis-ci.org/tolupatrick004/inverted-index-api) 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/04c565e40be4499d8500509b262b9c16)](https://www.codacy.com/app/tolupatrick004/inverted-index-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tolupatrick004/inverted-index-api&amp;utm_campaign=Badge_Grade)
 
 # Inverted Index Application
